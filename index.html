@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>CHIẾN TƯỚNG – Ancient Chinese Chess Battle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Thanh trạng thái trên cùng -->
+    <header id="ui-header">
+      <div class="header-left">
+        <h1 class="game-title">CHIẾN TƯỚNG</h1>
+        <span class="subtitle">ANCIENT BATTLE</span>
+      </div>
+      <div id="turn-indicator" class="turn-red">
+        <span class="turn-dot"></span>
+        <span id="turn-text">LƯỢT ĐỎ</span>
+      </div>
+      <div id="alert-banner" class="hidden"></div>
+    </header>
+
+    <!-- Khu vực hiển thị bàn cờ Canvas -->
+    <main id="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+    </main>
+
+    <!-- Thanh công cụ điều khiển -->
+    <footer id="ui-controls">
+      <div class="control-row">
+        <button id="btn-new-game" class="btn" title="Ván mới">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          <span>Ván mới</span>
+        </button>
+        <button id="btn-undo" class="btn" title="Đi lại một nước">
+          <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          <span>Hoàn tác</span>
+        </button>
+        <button id="btn-sound" class="btn" title="Bật/Tắt âm thanh">
+          <svg id="icon-sound-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27l4.73 4.73H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          <span>Âm thanh</span>
+        </button>
+      </div>
+
+      <div class="control-row settings-row">
+        <div class="control-group">
+          <label for="theme-select">Chiến trường:</label>
+          <select id="theme-select">
+            <option value="earth" selected>Thổ (Hoàng Thổ)</option>
+            <option value="metal">Kim (Bạch Kim)</option>
+            <option value="wood">Mộc (Cổ Mộc)</option>
+            <option value="water">Thủy (Hàn Băng)</option>
+            <option value="fire">Hỏa (Xích Diễm)</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="mode-select">Chế độ:</label>
+          <select id="mode-select">
+            <option value="pve">Người vs Máy</option>
+            <option value="pvp">Hai người (PvP)</option>
+          </select>
+        </div>
+        <div class="control-group" id="difficulty-group">
+          <label for="ai-difficulty">Độ khó:</label>
+          <select id="ai-difficulty">
+            <option value="easy">Dễ</option>
+            <option value="medium" selected>Vừa</option>
+            <option value="hard">Khó</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="anim-speed">Tốc độ:</label>
+          <select id="anim-speed">
+            <option value="1">1.0x</option>
+            <option value="1.5" selected>1.5x</option>
+            <option value="2">2.0x</option>
+          </select>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Màn hình chào mừng và hướng dẫn -->
+    <div id="modal-start" class="modal-overlay">
+      <div class="modal-content">
+        <h2>CHIẾN TƯỚNG</h2>
+        <p class="modal-tagline">ANCIENT CHINESE CHESS BATTLE</p>
+        <div class="modal-body">
+          <p>Trải nghiệm cờ tướng chiến thuật kết hợp hoạt ảnh chiến đấu 2.5D rực lửa:</p>
+          <ul>
+            <li>Quân đỏ tiến công trước theo luật cờ tướng tiêu chuẩn.</li>
+            <li>Khi ăn quân, hoạt ảnh giao chiến sẽ kích hoạt với hiệu ứng chém, bắn và sóng xung kích.</li>
+            <li>Chạm vào quân để chọn, các chấm xanh thể hiện nước đi hợp lệ.</li>
+	    <li>Zalo/Momo: 0907.900.506.</li>
+          </ul>
+        </div>
+        <button id="btn-start-game" class="btn btn-primary">XUẤT TRẬN</button>
+      </div>
+    </div>
+
+    <!-- Màn hình thông báo kết thúc -->
+    <div id="modal-gameover" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h2 id="gameover-title">KẾT THÚC</h2>
+        <p id="gameover-desc" class="modal-tagline"></p>
+        <button id="btn-restart" class="btn btn-primary">CHƠI LẠI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nạp các Module vẽ nhân vật 2.5D -->
+    <script src="GeneralRenderer.js"></script>
+    <script src="AdvisorRenderer.js"></script>
+    <script src="ElephantRenderer.js"></script>
+    <script src="ChariotRenderer.js"></script>
+    <script src="HorseRenderer.js"></script>
+    <script src="CannonRenderer.js"></script>
+    <script src="PawnRenderer.js"></script>
+
+    <!-- Nạp Module Chiến Trường Ngũ Hành -->
+    <script src="BattlefieldRenderer.js"></script>
+
+    <!-- Nạp Động cơ Game chính (Phải nằm cuối cùng) -->
+    <script src="game.js"></script>
+</body>
+</html>
