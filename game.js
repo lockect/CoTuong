@@ -1,7 +1,7 @@
 /**
  * CHIẾN TƯỚNG – ANCIENT CHINESE CHESS BATTLE
  * CORE ENGINE & 3D / 2.5D HYBRID CONTROLLER
- * Tích hợp đầy đủ: Luật cờ, AI Minimax, Hoạt ảnh 2.5D Canvas, Đồ họa 3D Action Cam, Chế độ xem 3D & 2.5D
+ * Tích hợp: Luật cờ, AI Minimax, Hoạt ảnh 2.5D Canvas, Pháo bắn đạn tầm xa, Đồ họa 3D Action Cam
  */
 
 // ==========================================
@@ -58,6 +58,118 @@ class SoundFX {
     osc.start(); osc.stop(n + 0.2);
   }
 
+          playTripleStab() {
+    if (!this.enabled || !this.ctx) return;
+    const n = this.ctx.currentTime;
+    [0, 0.1, 0.22].forEach((delay, idx) => {
+      const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1100 - idx * 120, n + delay);
+      osc.frequency.exponentialRampToValueAtTime(160, n + delay + 0.12);
+      gain.gain.setValueAtTime(0.65, n + delay);
+      gain.gain.linearRampToValueAtTime(0.01, n + delay + 0.14);
+      osc.connect(gain); gain.connect(this.ctx.destination);
+      osc.start(n + delay); osc.stop(n + delay + 0.14);
+    });
+  }
+
+  playChariotRam() {
+    if (!this.enabled || !this.ctx) return;
+    const n = this.ctx.currentTime;
+
+    const osc1 = this.ctx.createOscillator(), gain1 = this.ctx.createGain();
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(140, n);
+    osc1.frequency.exponentialRampToValueAtTime(420, n + 0.22);
+    gain1.gain.setValueAtTime(0.7, n);
+    gain1.gain.linearRampToValueAtTime(0.01, n + 0.25);
+    osc1.connect(gain1); gain1.connect(this.ctx.destination);
+    osc1.start(n); osc1.stop(n + 0.25);
+
+    setTimeout(() => {
+      if (!this.ctx) return;
+      const cn = this.ctx.currentTime;
+      const bS = Math.floor(this.ctx.sampleRate * 0.45);
+      const b = this.ctx.createBuffer(1, bS, this.ctx.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < bS; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bS * 0.2));
+      const noise = this.ctx.createBufferSource(), filter = this.ctx.createBiquadFilter(), gain = this.ctx.createGain();
+      noise.buffer = b;
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(600, cn);
+      filter.frequency.linearRampToValueAtTime(40, cn + 0.45);
+      gain.gain.setValueAtTime(0.95, cn);
+      gain.gain.linearRampToValueAtTime(0.01, cn + 0.45);
+      noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+      noise.start(cn);
+    }, 220);
+  }
+
+  playPierceThrow() {
+    if (!this.enabled || !this.ctx) return;
+    const n = this.ctx.currentTime;
+
+    const osc1 = this.ctx.createOscillator(), gain1 = this.ctx.createGain();
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(950, n);
+    osc1.frequency.exponentialRampToValueAtTime(120, n + 0.18);
+    gain1.gain.setValueAtTime(0.65, n);
+    gain1.gain.linearRampToValueAtTime(0.01, n + 0.22);
+    osc1.connect(gain1); gain1.connect(this.ctx.destination);
+    osc1.start(n); osc1.stop(n + 0.22);
+
+    const osc2 = this.ctx.createOscillator(), gain2 = this.ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(220, n + 0.12);
+    osc2.frequency.exponentialRampToValueAtTime(850, n + 0.45);
+    gain2.gain.setValueAtTime(0.55, n + 0.12);
+    gain2.gain.linearRampToValueAtTime(0.01, n + 0.5);
+    osc2.connect(gain2); gain2.connect(this.ctx.destination);
+    osc2.start(n + 0.12); osc2.stop(n + 0.5);
+
+    setTimeout(() => {
+      if (!this.ctx) return;
+      const cn = this.ctx.currentTime;
+      const bS = Math.floor(this.ctx.sampleRate * 0.35);
+      const b = this.ctx.createBuffer(1, bS, this.ctx.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < bS; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bS * 0.18));
+      const noise = this.ctx.createBufferSource(), filter = this.ctx.createBiquadFilter(), gain = this.ctx.createGain();
+      noise.buffer = b;
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(450, cn);
+      filter.frequency.linearRampToValueAtTime(50, cn + 0.35);
+      gain.gain.setValueAtTime(0.85, cn);
+      gain.gain.linearRampToValueAtTime(0.01, cn + 0.35);
+      noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+      noise.start(cn);
+    }, 450);
+  }
+
+  playStomp() {
+    if (!this.enabled || !this.ctx) return;
+    const n = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, n);
+    osc.frequency.exponentialRampToValueAtTime(25, n + 0.45);
+    gain.gain.setValueAtTime(0.85, n);
+    gain.gain.linearRampToValueAtTime(0.01, n + 0.48);
+    osc.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(n); osc.stop(n + 0.48);
+
+    const bS = Math.floor(this.ctx.sampleRate * 0.45);
+    const b = this.ctx.createBuffer(1, bS, this.ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < bS; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bS * 0.22));
+    const noise = this.ctx.createBufferSource(), filter = this.ctx.createBiquadFilter(), nGain = this.ctx.createGain();
+    noise.buffer = b;
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(350, n);
+    filter.frequency.linearRampToValueAtTime(35, n + 0.48);
+    nGain.gain.setValueAtTime(0.95, n);
+    nGain.gain.linearRampToValueAtTime(0.01, n + 0.48);
+    noise.connect(filter); filter.connect(nGain); nGain.connect(this.ctx.destination);
+    noise.start(n);
+  }
+
   playExplosion() {
     if (!this.enabled || !this.ctx) return;
     const n = this.ctx.currentTime, bS = Math.floor(this.ctx.sampleRate * 0.35);
@@ -68,7 +180,7 @@ class SoundFX {
     filter.type = 'lowpass'; 
     filter.frequency.setValueAtTime(450, n); 
     filter.frequency.linearRampToValueAtTime(60, n + 0.35);
-    gain.gain.setValueAtTime(0.6, n); 
+    gain.gain.setValueAtTime(0.65, n); 
     gain.gain.linearRampToValueAtTime(0.01, n + 0.35);
     noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
     noise.start();
@@ -156,7 +268,7 @@ class ChessRules {
       case 'E': 
         [{dr:-2,dc:-2,er:-1,ec:-1},{dr:-2,dc:2,er:-1,ec:1},{dr:2,dc:-2,er:1,ec:-1},{dr:2,dc:2,er:1,ec:1}].forEach(d=>{ 
           const nr=r+d.dr,nc=c+d.dc; 
-          if((color===RED&&nr<5)||(!color===RED&&nr>4)) return; 
+          if((color===RED&&nr<5)||(color===BLACK&&nr>4)) return; 
           if(this.inBounds(nr,nc)&&!b[r+d.er][c+d.ec]) add(nr,nc); 
         }); 
         break;
@@ -485,6 +597,24 @@ class ParticleSystem {
       this.pt.push({x,y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,life:1,decay:Math.random()*0.03+0.02,color,size:Math.random()*size+2}); 
     } 
   }
+    emitStarlight(x, y, color, count = 15) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2, spd = (Math.random() * 0.8 + 0.3) * 6;
+      this.pt.push({
+        x, y,
+        vx: Math.cos(a) * spd,
+        vy: Math.sin(a) * spd,
+        life: 1,
+        decay: Math.random() * 0.04 + 0.02,
+        color,
+        size: Math.random() * 6 + 3,
+        isStar: true,
+        rot: Math.random() * Math.PI,
+        rotSpeed: (Math.random() - 0.5) * 0.2
+      });
+    }
+  }
+
   emitShockwave(x, y, color='#fff') { 
     this.pt.push({x,y,vx:0,vy:0,life:1,decay:0.04,isWave:true,r:6,mr:45,color}); 
   }
@@ -501,7 +631,24 @@ class ParticleSystem {
     ctx.save();
     for (const p of this.pt) {
       ctx.globalAlpha = Math.max(0, p.life);
-      if (p.isWave) { 
+      if (p.isStar) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot || 0);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = p.size * 2;
+        const sz = p.size * p.life;
+        ctx.beginPath();
+        ctx.moveTo(0, -sz);
+        ctx.quadraticCurveTo(0, 0, sz, 0);
+        ctx.quadraticCurveTo(0, 0, 0, sz);
+        ctx.quadraticCurveTo(0, 0, -sz, 0);
+        ctx.quadraticCurveTo(0, 0, 0, -sz);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else if (p.isWave) { 
         ctx.strokeStyle = p.color; ctx.lineWidth = 3 * p.life; 
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.stroke(); 
       } else { 
@@ -882,14 +1029,14 @@ class ThreeChessRenderer {
     });
   }
 
-  movePiece(from, to, duration = 400) {
+  movePiece(from, to, duration = 400, isElephant = false, isHorse = false, isChariot = false) {
     return new Promise((resolve) => {
       const piece = this.pieces3D[from.r][from.c];
       if (!piece) return resolve();
 
       const targetPos = this.gridToWorld(to.r, to.c);
 
-      // XÓA DỨT ĐIỂM QUÂN BỊ ĂN KHỎI SCENE 3D (Khắc phục lỗi bóng ma)
+      // Xóa triệt để model quân phòng thủ (nếu có) để tránh hiện tượng bóng ma
       const defenderPiece = this.pieces3D[to.r][to.c];
       if (defenderPiece) {
         this.scene.remove(defenderPiece);
@@ -975,6 +1122,28 @@ class ThreeChessRenderer {
   }
 
   bindEvents() {
+    const modalSettings = document.getElementById('modal-settings');
+    const btnSettings = document.getElementById('btn-settings');
+    if (btnSettings && modalSettings) {
+      btnSettings.addEventListener('click', () => {
+        this.sound.init();
+        modalSettings.classList.remove('hidden');
+      });
+    }
+
+    const btnCloseSettings = document.getElementById('btn-close-settings');
+    if (btnCloseSettings && modalSettings) {
+      btnCloseSettings.addEventListener('click', () => {
+        modalSettings.classList.add('hidden');
+      });
+    }
+
+    const btnApplySettings = document.getElementById('btn-apply-settings');
+    if (btnApplySettings && modalSettings) {
+      btnApplySettings.addEventListener('click', () => {
+        modalSettings.classList.add('hidden');
+      });
+    }
     window.addEventListener('resize', () => {
       const parent = this.canvas.parentElement;
       const rect = parent ? parent.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
@@ -1022,7 +1191,7 @@ class ThreeChessRenderer {
 class GameController {
   constructor() {
     this.currentTheme = 'earth';
-    this.viewMode = '3d'; // '3d' hoặc '2.5d'
+    this.viewMode = '2.5d';
     this.canvas2D = document.getElementById('gameCanvas'); 
     this.canvas3D = document.getElementById('threeCanvas');
 
@@ -1232,33 +1401,54 @@ class GameController {
     const isCapture = move.capture !== null;
     const sPos = this.renderer2D.getBoardCoords(move.from.r, move.from.c);
     const ePos = this.renderer2D.getBoardCoords(move.to.r, move.to.c);
+    const pieceType = ChessRules.getType(this.board[move.from.r][move.from.c]);
+    const isCannon = pieceType === 'C';
 
     if (isCapture) {
-      this.combat = { 
-        m: move, sP: sPos, eP: ePos, 
-        a: this.board[move.from.r][move.from.c], 
-        d: move.capture, 
-        p: 0, ph: 'move', hit: false 
-      };
+      if (isCannon) {
+        // PHÁO TẤN CÔNG TẦM XA: Bắn đạn nổ tung đối thủ trước, sau đó mới di chuyển tới ô đó
+        this.combat = { 
+          m: move, sP: sPos, eP: ePos, 
+          a: this.board[move.from.r][move.from.c], 
+          d: move.capture, 
+          p: 0, ph: 'cannon_shoot', hit: false,
+          isCannon: true
+        };
+      } else {
+        // CÁC QUÂN CẬN CHIẾN KHÁC: Di chuyển lại gần rồi chém/đâm
+        this.combat = { 
+          m: move, sP: sPos, eP: ePos, 
+          a: this.board[move.from.r][move.from.c], 
+          d: move.capture, 
+          p: 0, ph: 'move', hit: false,
+          isCannon: false
+        };
+      }
 
       if (this.renderer3D && this.viewMode === '3d') {
         const attackerMesh = this.renderer3D.pieces3D[move.from.r][move.from.c];
         const defenderMesh = this.renderer3D.pieces3D[move.to.r][move.to.c];
-        const aLabel = attackerMesh ? attackerMesh.userData.label : 'Tướng';
+        const aLabel = attackerMesh ? attackerMesh.userData.label : 'Pháo';
         const dLabel = defenderMesh ? defenderMesh.userData.label : 'Quân cờ';
         const targetWorldPos = this.renderer3D.gridToWorld(move.to.r, move.to.c);
 
         this.renderer3D.triggerActionCam(aLabel, dLabel, targetWorldPos, 1200 / this.animSpeedMod);
-        this.renderer3D.movePiece(move.from, move.to, 350 / this.animSpeedMod);
-      } else if (this.renderer3D) {
-        this.renderer3D.movePiece(move.from, move.to, 350 / this.animSpeedMod);
+        if (isCannon) {
+          // 3D: Pháo đứng ngắm bắn rồi mới lướt tới
+          setTimeout(() => {
+            this.renderer3D.movePiece(move.from, move.to, 450 / this.animSpeedMod, isElephant, isHorse, isChariot);
+          }, 700 / this.animSpeedMod);
+        } else {
+          this.renderer3D.movePiece(move.from, move.to, 350 / this.animSpeedMod);
+        }
       }
     } else {
       this.combat = { 
         m: move, sP: sPos, eP: ePos, 
         a: this.board[move.from.r][move.from.c], 
         d: null, 
-        p: 0, ph: 'move_only' 
+        p: 0, ph: 'move_only',
+        isCannon: false
       };
       this.sound.playMove();
 
@@ -1344,7 +1534,9 @@ class GameController {
       if (c.ph === 'move_only') {
         c.p += dt * 3.5;
         if (c.p >= 1) this.finalizeMove();
-      } else if (c.ph === 'move') {
+      } 
+      // === QUÂN CẬN CHIẾN ===
+      else if (c.ph === 'move') {
         c.p += dt * 3.0;
         if (c.p >= 1) { c.ph = 'attack'; c.p = 0; }
       } else if (c.ph === 'attack') {
@@ -1352,17 +1544,43 @@ class GameController {
         if (c.p > 0.4 && !c.hit) {
           c.hit = true;
           this.screenShake = 12;
-          if (ChessRules.getType(c.a) === 'C') {
-            this.sound.playExplosion();
-            this.particles.emitShockwave(c.eP.x, c.eP.y, '#fff');
-          } else {
-            this.sound.playSlash();
-            this.particles.emitShockwave(c.eP.x, c.eP.y, '#fff');
-          }
+          this.sound.playSlash();
+          this.particles.emitShockwave(c.eP.x, c.eP.y, '#fff');
         }
         if (c.p >= 1) { c.ph = 'defeat'; c.p = 0; }
       } else if (c.ph === 'defeat') {
         c.p += dt * 2.0;
+        if (c.p >= 1) {
+          if (c.isCannon) {
+            // Đối thủ nổ xong, Pháo mới bắt đầu di chuyển tới vị trí đó
+            c.ph = 'cannon_move';
+            c.p = 0;
+            this.sound.playMove();
+          } else {
+            this.finalizeMove();
+          }
+        }
+      }
+      // === QUÂN PHÁO BẮN TẦM XA ===
+      else if (c.ph === 'cannon_shoot') {
+        c.p += dt * 2.0; 
+        if (c.p >= 0.85 && !c.hit) {
+          c.hit = true;
+          this.screenShake = 16;
+          this.sound.playExplosion();
+          const isRed = ChessRules.getColor(c.a) === RED;
+          const energyColor = isRed ? '#ff3d00' : '#00e5ff';
+          this.particles.emitShockwave(c.eP.x, c.eP.y, energyColor);
+          this.particles.emit(c.eP.x, c.eP.y, energyColor, 20, 5, 7);
+          this.particles.emit(c.eP.x, c.eP.y, '#ffd700', 12, 4, 5);
+        }
+        if (c.p >= 1) {
+          c.ph = 'defeat';
+          c.p = 0;
+        }
+      }
+      else if (c.ph === 'cannon_move') {
+        c.p += dt * 3.5;
         if (c.p >= 1) this.finalizeMove();
       }
     }
@@ -1405,34 +1623,85 @@ class GameController {
 
     if (this.combat) {
       const c = this.combat;
+      
+      // Vẽ Defender (Quân bị tấn công)
       if (c.d) {
         if (c.ph === 'move' || c.ph === 'attack') {
           let state = 'idle';
           if (c.ph === 'attack' && c.p > 0.4) state = 'hurt';
           CharacterRenderer.drawPiece(ctx, c.d, c.eP.x + (state === 'hurt' ? (Math.random() - 0.5) * 5 : 0), c.eP.y, rad, time, state, 0, false);
+        } else if (c.ph === 'cannon_shoot') {
+          let state = 'idle';
+          if (c.p > 0.85) state = 'hurt'; 
+          CharacterRenderer.drawPiece(ctx, c.d, c.eP.x + (state === 'hurt' ? (Math.random() - 0.5) * 6 : 0), c.eP.y, rad, time, state, 0, false);
         } else if (c.ph === 'defeat') {
           CharacterRenderer.drawPiece(ctx, c.d, c.eP.x, c.eP.y, rad, time, 'die', c.p, false);
         }
       }
 
-      if (c.ph === 'move_only') {
-        const x = c.sP.x + (c.eP.x - c.sP.x) * c.p;
-        const y = c.sP.y + (c.eP.y - c.sP.y) * c.p;
-        CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, 'walk', c.p, false);
-      } else if (c.ph === 'move') {
-        const dx = c.eP.x - c.sP.x, dy = c.eP.y - c.sP.y;
-        const dist = Math.hypot(dx, dy);
-        const stopRatio = Math.max(0, (dist - rad * 1.5) / dist);
-        const x = c.sP.x + dx * stopRatio * c.p;
-        const y = c.sP.y + dy * stopRatio * c.p;
-        CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, 'walk', c.p, false);
-      } else if (c.ph === 'attack' || c.ph === 'defeat') {
-        const dx = c.eP.x - c.sP.x, dy = c.eP.y - c.sP.y;
-        const dist = Math.hypot(dx, dy);
-        const stopRatio = Math.max(0, (dist - rad * 1.5) / dist);
-        const x = c.sP.x + dx * stopRatio;
-        const y = c.sP.y + dy * stopRatio;
-        CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, c.ph === 'attack' ? 'attack' : 'idle', c.ph === 'attack' ? c.p : 0, false);
+      // Vẽ Attacker (Quân tấn công)
+      if (c.isCannon) {
+        if (c.ph === 'cannon_shoot') {
+          // Pháo đứng nguyên tại sP ngắm bắn
+          CharacterRenderer.drawPiece(ctx, c.a, c.sP.x, c.sP.y, rad, time, 'attack', c.p, false);
+
+          // Vẽ đạn pháo ma thuật bay cầu vồng từ sP đến eP
+          if (c.p >= 0.25) {
+            const bulletP = Math.min(1, (c.p - 0.25) / 0.65);
+            const bx = c.sP.x + (c.eP.x - c.sP.x) * bulletP;
+            const by = c.sP.y + (c.eP.y - c.sP.y) * bulletP;
+            const arcY = by + Math.sin(bulletP * Math.PI) * -35;
+
+            const isRed = ChessRules.getColor(c.a) === RED;
+            const energyColor = isRed ? '#ff3d00' : '#00e5ff';
+            const trailColor = isRed ? '#ff9100' : '#80d8ff';
+
+            this.particles.emit(bx, arcY, trailColor, 2, 1.5, 3);
+
+            ctx.save();
+            ctx.shadowColor = energyColor;
+            ctx.shadowBlur = 16;
+            ctx.fillStyle = energyColor;
+            ctx.beginPath();
+            ctx.arc(bx, arcY, rad * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(bx, arcY, rad * 0.18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        } else if (c.ph === 'defeat') {
+          // Đối thủ đang nổ, Pháo đứng yên tại sP
+          CharacterRenderer.drawPiece(ctx, c.a, c.sP.x, c.sP.y, rad, time, 'idle', 0, false);
+        } else if (c.ph === 'cannon_move') {
+          // Đối thủ nổ xong, Pháo mới lướt từ sP sang eP
+          const x = c.sP.x + (c.eP.x - c.sP.x) * c.p;
+          const y = c.sP.y + (c.eP.y - c.sP.y) * c.p;
+          CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, 'walk', c.p, false);
+        }
+      } else {
+        // CÁC QUÂN CẬN CHIẾN KHÁC
+        if (c.ph === 'move_only') {
+          const x = c.sP.x + (c.eP.x - c.sP.x) * c.p;
+          const y = c.sP.y + (c.eP.y - c.sP.y) * c.p;
+          CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, 'walk', c.p, false);
+        } else if (c.ph === 'move') {
+          const dx = c.eP.x - c.sP.x, dy = c.eP.y - c.sP.y;
+          const dist = Math.hypot(dx, dy);
+          const stopRatio = Math.max(0, (dist - rad * 1.5) / dist);
+          const x = c.sP.x + dx * stopRatio * c.p;
+          const y = c.sP.y + dy * stopRatio * c.p;
+          CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, 'walk', c.p, false);
+        } else if (c.ph === 'attack' || c.ph === 'defeat') {
+          const dx = c.eP.x - c.sP.x, dy = c.eP.y - c.sP.y;
+          const dist = Math.hypot(dx, dy);
+          const stopRatio = Math.max(0, (dist - rad * 1.5) / dist);
+          const x = c.sP.x + dx * stopRatio;
+          const y = c.sP.y + dy * stopRatio;
+          CharacterRenderer.drawPiece(ctx, c.a, x, y, rad, time, c.ph === 'attack' ? 'attack' : 'idle', c.ph === 'attack' ? c.p : 0, false);
+        }
       }
     }
 
