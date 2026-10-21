@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CHIẾN TƯỚNG – Ancient Chinese Chess Battle</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Nạp Three.js, OrbitControls và TWEEN từ CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+  <!-- Thư viện Three.js, OrbitControls và TWEEN từ CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </head>
 <body>
-  <div id="game-container">
+  <div id="game-container" class="view-3d">
     <!-- Thanh trạng thái trên cùng -->
     <header id="ui-header">
       <div class="header-left">
@@ -26,22 +26,22 @@
     </header>
 
     <!-- Khu vực hiển thị bàn cờ Canvas -->
-    <main id="canvas-wrapper" style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
-  <!-- Canvas 3D chính (Toàn màn hình) -->
-  <canvas id="threeCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></canvas>
+    <main id="canvas-wrapper">
+      <!-- Canvas 3D chính (Toàn màn hình) -->
+      <canvas id="threeCanvas"></canvas>
 
-  <!-- Minimap 2D (Tận dụng Canvas 2D hiện tại thu nhỏ xuống góc phải dưới) -->
-  <div id="minimap-container" style="position: absolute; bottom: 85px; right: 15px; width: 150px; height: 180px; z-index: 10; border: 2px solid #ffd700; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.6); background: rgba(0,0,0,0.5);">
-    <canvas id="gameCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
-  </div>
+      <!-- Minimap 2D (Tận dụng Canvas 2D hiện tại thu nhỏ xuống góc phải dưới) -->
+      <div id="minimap-container">
+        <canvas id="gameCanvas"></canvas>
+      </div>
 
-  <!-- Thanh Versus đối đầu xuất hiện khi ăn quân giống Xóm Cờ Vua -->
-  <div id="versus-card" class="hidden" style="position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 15; display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.8); border: 2px solid #ff1744; border-radius: 12px; padding: 10px 25px; color: #fff; font-weight: bold; pointer-events: none;">
-    <span id="vs-attacker" style="color: #ff5252; font-size: 1.2rem;"></span>
-    <span style="color: #ffd700; font-size: 1.5rem; font-style: italic;">VS</span>
-    <span id="vs-defender" style="color: #40c4ff; font-size: 1.2rem;"></span>
-  </div>
-</main>
+      <!-- Thanh Versus đối đầu xuất hiện khi ăn quân -->
+      <div id="versus-card">
+        <span id="vs-attacker"></span>
+        <span class="vs-text">VS</span>
+        <span id="vs-defender"></span>
+      </div>
+    </main>
 
     <!-- Thanh công cụ điều khiển -->
     <footer id="ui-controls">
@@ -63,7 +63,7 @@
 
       <div class="control-row settings-row">
         <div class="control-group">
-          <label for="view-mode-select">Chế độ xem:</label>
+          <label for="view-mode-select">Góc nhìn:</label>
           <select id="view-mode-select">
             <option value="3d" selected>3D (Chiến trường)</option>
             <option value="2.5d">2.5D (Cổ điển)</option>
@@ -111,12 +111,12 @@
         <h2>CHIẾN TƯỚNG</h2>
         <p class="modal-tagline">ANCIENT CHINESE CHESS BATTLE</p>
         <div class="modal-body">
-          <p>Trải nghiệm cờ tướng chiến thuật kết hợp hoạt ảnh chiến đấu 2.5D rực lửa:</p>
+          <p>Trải nghiệm cờ tướng chiến thuật kết hợp hoạt ảnh chiến đấu 2.5D & 3D Action Cam:</p>
           <ul>
             <li>Quân đỏ tiến công trước theo luật cờ tướng tiêu chuẩn.</li>
             <li>Khi ăn quân, hoạt ảnh giao chiến sẽ kích hoạt với hiệu ứng chém, bắn và sóng xung kích.</li>
-            <li>Chạm vào quân để chọn, các chấm xanh thể hiện nước đi hợp lệ.</li>
-	    <li>Zalo/Momo: 0907.900.506.</li>
+            <li>Chế độ 3D cho phép chạm chọn quân, vuốt xoay 360 độ và phóng to thu nhỏ.</li>
+            <li>Zalo/Momo: 0907.900.506.</li>
           </ul>
         </div>
         <button id="btn-start-game" class="btn btn-primary">XUẤT TRẬN</button>
@@ -134,18 +134,18 @@
   </div>
 
   <!-- Nạp các Module vẽ nhân vật 2.5D -->
-    <script src="GeneralRenderer.js"></script>
-    <script src="AdvisorRenderer.js"></script>
-    <script src="ElephantRenderer.js"></script>
-    <script src="ChariotRenderer.js"></script>
-    <script src="HorseRenderer.js"></script>
-    <script src="CannonRenderer.js"></script>
-    <script src="PawnRenderer.js"></script>
+  <script src="GeneralRenderer.js"></script>
+  <script src="AdvisorRenderer.js"></script>
+  <script src="ElephantRenderer.js"></script>
+  <script src="ChariotRenderer.js"></script>
+  <script src="HorseRenderer.js"></script>
+  <script src="CannonRenderer.js"></script>
+  <script src="PawnRenderer.js"></script>
 
-    <!-- Nạp Module Chiến Trường Ngũ Hành -->
-    <script src="BattlefieldRenderer.js"></script>
+  <!-- Nạp Module Chiến Trường Ngũ Hành -->
+  <script src="BattlefieldRenderer.js"></script>
 
-    <!-- Nạp Động cơ Game chính (Phải nằm cuối cùng) -->
-    <script src="game.js"></script>
+  <!-- Nạp Động cơ Game chính (Phải nằm cuối cùng) -->
+  <script src="game.js"></script>
 </body>
 </html>
